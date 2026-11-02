@@ -1,0 +1,50 @@
+# Tasks: Weather App
+
+- [ ] 1. Project setup
+  - [ ] 1.1 Project setup
+    - Create the repository skeleton: `app/` (Expo with Expo Router, TypeScript) and `server/` (Express, TypeScript), a root `package.json` with npm workspaces and the `test` script that runs both packages' tests once, `README.md` with the commands of `## Build and run`, `.gitignore` including `.env`, and `.env.example` naming `EXPO_PUBLIC_API_URL` and `PORT`.
+    - Build the whole Node.js service: `GET /api/health`, `GET /api/places?q=` and `GET /api/weather?lat=&lon=&name=` with the exact shapes, the WMO condition mapping and the `400`/`502` answers of `design.md`, listening on `process.env.PORT` (default 4000) on `127.0.0.1`, with `node --test` + `supertest` tests against a stubbed weather service client.
+    - Add the app's shared pieces: the service client reading `EXPO_PUBLIC_API_URL` with a 10-second timeout, the AsyncStorage helpers for `weather-app:savedPlaces` and `weather-app:lastWeather:<id>`, the Expo Router stack (`index`, `search`, `place/[id]`), the shared stylesheet with the colours and font of `## Look and feel` as CSS variables, and `jest-expo` + `@testing-library/react-native` with one passing test.
+    - Add `@playwright/test` and an `e2e/` folder holding `.gitkeep`, left out of the jest run.
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
+    - _Files: package.json, README.md, .gitignore, .env.example, server/**, app/package.json, app/app.json, app/tsconfig.json, app/app/_layout.tsx, app/app/index.tsx, app/app/search.tsx, app/app/place/[id].tsx, app/src/api/**, app/src/storage/**, app/src/theme/**, app/__tests__/setup.test.tsx, e2e/.gitkeep_
+    - _Verify: npm test --workspace server_
+    - _Verify: npm test --workspace app -- setup_
+  - [ ] 1.2 Deployment setup
+    - Write what Expo and the cloud host need to build and run the app and the service: the Expo build configuration for the app, the service's `Dockerfile` and `.dockerignore`, a `docker-compose.prod.yml` for the service, and the start command that runs the service's build first.
+    - Secrets are read from environment variables only; nothing is deployed.
+    - _Requirements: 1.1, 2.1, 3.1_
+    - _Depends: 1.1_
+    - _Mode: devops_
+    - _Area: deploy_
+    - _Files: Dockerfile, .dockerignore, docker-compose.prod.yml, app/eas.json, server/package.json_
+    - _Verify: docker compose -f docker-compose.prod.yml config --quiet --no-interpolate_
+    - _Verify: docker build -t weather-app-2:verify ._
+- [ ] 2. Saved places list screen
+  - [ ] 2.1 Saved places list screen
+    - Build `app/app/index.tsx`: the "Weather" header with the round add button, the list of saved places on white cards with name, location and chevron, the swipe-left Delete action, the empty state with "No places saved yet." and "Add a place", and navigation to the search screen and to the weather screen for the tapped place.
+    - Style it in its own stylesheet from `## Look and feel`, laid out as `design.md` gives for a phone and a desktop preview; test it with `jest-expo` and AsyncStorage mocked.
+    - _Requirements: 1.1, 1.2, 1.6, 1.7, 1.8_
+    - _Depends: 1.1_
+    - _Area: ui_
+    - _Files: app/app/index.tsx, app/src/screens/savedPlaces/**, app/__tests__/savedPlaces.test.tsx_
+    - _Verify: npm test --workspace app -- savedPlaces_
+- [ ] 3. Search places screen
+  - [ ] 3.1 Search places screen
+    - Build `app/app/search.tsx`: the search field with Cancel, focused on open, results from the service client after 2 characters with name and location, tapping a result saving the place and returning to the list, the duplicate rule keeping the one already saved, and the message "Could not search places. Check your connection and try again." under the field when the search fails.
+    - Style it in its own stylesheet from `## Look and feel`; test it with `jest-expo`, the service client mocked and AsyncStorage mocked.
+    - _Requirements: 1.3, 1.4, 1.5, 1.9_
+    - _Depends: 1.1_
+    - _Area: ui_
+    - _Files: app/app/search.tsx, app/src/screens/search/**, app/__tests__/search.test.tsx_
+    - _Verify: npm test --workspace app -- search_
+- [ ] 4. Weather screen
+  - [ ] 4.1 Weather screen
+    - Build `app/app/place/[id].tsx`: the back button and place name, the current conditions card (temperature, condition, feels like, humidity, wind), the 5-day forecast card, the loading indicator, pull to refresh, and saving each fetched answer as the last weather for the place.
+    - Show the last weather with the banner "Showing the last weather saved. Could not reach the weather service." and its fetched time when the service fails, or the message "Could not load the weather. Check your connection and try again." with a Try again button when nothing is saved; keep every tap answered within 1 second.
+    - Style it in its own stylesheet from `## Look and feel`; test it with `jest-expo`, the service client mocked and AsyncStorage mocked.
+    - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
+    - _Depends: 1.1_
+    - _Area: ui_
+    - _Files: app/app/place/[id].tsx, app/src/screens/weather/**, app/__tests__/weather.test.tsx_
+    - _Verify: npm test --workspace app -- weather_
