@@ -1,0 +1,13 @@
+# Static hosting for the Scientific Calculator.
+# The app is plain HTML, CSS and JavaScript at the repository root, so there is
+# no build step and no server: Netlify publishes the root folder as the site and
+# `/` opens `index.html`.
+
+[build]
+  publish = "."
+  command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
