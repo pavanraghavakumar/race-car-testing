@@ -1,0 +1,196 @@
+/* styles.css — the look and feel of the calculator screen. */
+
+:root {
+  /* Colours */
+  --color-page: #eef1f6;
+  --color-surface: #1f2430;
+  --color-display: #151a23;
+  --color-text: #f5f7fa;
+  --color-muted: #9aa4b2;
+  --color-primary: #4f8cff;
+  --color-error: #ff6b6b;
+  --color-success: #3ddc97;
+  --color-key: #2b3242;
+  --color-key-function: #39415a;
+  --color-key-hover: #3a4356;
+  --color-key-function-hover: #48526e;
+  --color-key-pressed: #232936;
+  --color-key-function-pressed: #2f3648;
+
+  /* Font */
+  --font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-display-size: 2rem;
+
+  /* Spacing (8px steps) */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+
+  /* Corner radius */
+  --radius-calculator: 12px;
+  --radius-key: 10px;
+  --radius-display: 8px;
+
+  /* Layout */
+  --key-min-height: 44px;
+  --calculator-width: 360px;
+  --shadow-calculator: 0 12px 32px rgba(21, 26, 35, 0.18);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  background: var(--color-page);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.calculator {
+  width: 100%;
+  max-width: var(--calculator-width);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border-radius: var(--radius-calculator);
+  box-shadow: var(--shadow-calculator);
+}
+
+.display {
+  min-height: 72px;
+  padding: var(--space-2);
+  background: var(--color-display);
+  border-radius: var(--radius-display);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: var(--font-display-size);
+  text-align: right;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+.display:empty::before {
+  content: attr(data-placeholder);
+  color: var(--color-muted);
+}
+
+.display.is-error {
+  color: var(--color-error);
+  font-size: 1.25rem;
+}
+
+.angle-switch {
+  display: flex;
+  gap: var(--space-1);
+  margin: var(--space-2) 0;
+}
+
+.angle-button {
+  flex: 1;
+  min-height: var(--key-min-height);
+  padding: var(--space-1);
+  border: none;
+  border-radius: var(--radius-key);
+  background: var(--color-key-function);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.angle-button[aria-pressed="true"] {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+
+.key {
+  min-height: var(--key-min-height);
+  padding: var(--space-1);
+  border: none;
+  border-radius: var(--radius-key);
+  background: var(--color-key);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: background-color 120ms ease, transform 60ms ease;
+}
+
+.key--function {
+  background: var(--color-key-function);
+}
+
+.key--equals {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.key--wide {
+  grid-column: span 4;
+}
+
+.key:hover {
+  background: var(--color-key-hover);
+}
+
+.key--function:hover {
+  background: var(--color-key-function-hover);
+}
+
+.key--equals:hover {
+  background: #6a9dff;
+}
+
+.key:focus-visible,
+.angle-button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.key:active {
+  background: var(--color-key-pressed);
+  transform: translateY(1px);
+}
+
+.key--function:active {
+  background: var(--color-key-function-pressed);
+}
+
+.key:disabled,
+.angle-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: var(--space-2);
+    align-items: flex-start;
+  }
+
+  .calculator {
+    max-width: none;
+    padding: var(--space-2);
+  }
+}
