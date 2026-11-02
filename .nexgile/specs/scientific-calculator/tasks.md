@@ -28,8 +28,8 @@
     - _Area: ui_
     - _Issue: #26_
 
-- [ ] 3. Deployment setup
-  - [ ] 3.1 Configure static hosting
+- [x] 3. Deployment setup
+  - [x] 3.1 Configure static hosting
     - Add `netlify.toml` that publishes the app's root folder as the site, so `/` opens `index.html`, with no build step and no server.
     - _Requirements: 1.1_
     - _Depends: 2.1_
