@@ -1,0 +1,140 @@
+# Tasks: 3D Car Racing Game
+
+- [ ] 1. Project setup
+  - [ ] 1.1 Project setup
+    - Create the Unity client project in `client/` (C# scripts under `client/Assets/Scripts/`, NUnit tests under `client/Tests/`), the ASP.NET Core .NET 8 game server in `server/` with the SQLite schema of `design.md` applied by a migration on startup, the shared contracts library in `shared/`, and the solution file that builds all three.
+    - Build every server endpoint of `design.md` in its own endpoint class (`AuthEndpoints`, `ProfileEndpoints`, `GarageEndpoints`, `RaceEndpoints`, `LeaderboardEndpoints`, `CareerEndpoints`, `SupportEndpoints`, `HealthEndpoints`) with the exact request fields, success answers and error messages the design gives, plus the WebSocket `/ws/race` relay with the anti-cheat check, the matchmaker (8 Players or 30 seconds, matched by car class and career level), the reward and level maths, the upgrade cost rule, the leaderboard query and the account deletion job.
+    - Seed the 30 cars, 15 tracks, career stages and achievements from JSON in `server/Data/`, and write the seed script with the test logins of `design.md` that `Dev` runs on an empty database and that never creates them when `NODE_ENV` is `production`.
+    - Write `README.md` with the commands of `## Build and run`, a `.gitignore` that includes `.env`, `.env.example` with the server's connection setting, port and the production first-account values, and the `e2e/` folder with a `.gitkeep` that the unit test runner leaves out.
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.8, 1.9, 1.10, 2.1, 2.7, 2.8, 3.1, 3.4, 4.1, 4.2, 4.3, 4.5, 4.6, 4.7, 5.3, 5.4, 5.5, 5.6, 5.7, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 7.1, 7.2, 7.3, 7.4, 7.5, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9, 10.1, 10.2, 10.3, 10.4, 11.1, 11.2, 11.5, 12.1, 12.2, 12.3, 13.1, 13.2, 13.3, 13.4, 13.5, 14.1, 14.3, 14.4, 15.1, 15.2, 15.3, 15.4_
+    - _Files: client/**, server/**, shared/**, e2e/.gitkeep, README.md, .gitignore, .env.example, *.sln_
+    - _Verify: dotnet restore_
+    - _Verify: dotnet test server.Tests --filter FullyQualifiedName~Endpoints_
+    - _Verify: dotnet test server.Tests --filter FullyQualifiedName~Matchmaker|FullyQualifiedName~Rewards|FullyQualifiedName~Leaderboard_
+    - _Verify: dotnet test client/Tests --filter FullyQualifiedName~ProfileStore_
+    - _Area: setup_
+  - [ ] 1.2 Shared contracts and game events
+    - Write the request and response models and the WebSocket message types of `design.md` in `shared/`, and the `GameEvents` static class with `RaceFinished`, `ProfileChanged`, `CarUnlocked`, `AchievementUnlocked` and `ConnectionChanged` carrying the fields the design lists.
+    - _Requirements: 2.1, 5.1, 5.2, 6.6, 6.7, 8.5, 12.3_
+    - _Depends: 1.1_
+    - _Files: shared/**, client/Assets/Scripts/Core/GameEvents.cs_
+    - _Verify: dotnet test shared.Tests --filter FullyQualifiedName~Contracts_
+    - _Area: setup_
+- [ ] 2. Sign-in screen
+  - [ ] 2.1 Sign-in screen
+    - Build the sign-in screen: the game logo, email and password fields, a full-width Sign in button and a Create account link, with the sign-up fields (username, email, password) and the consent checkbox, calling `AuthService` against `/api/auth/signup` and `/api/auth/signin` and showing the server's messages verbatim below the fields; it is the screen the game opens when no Player is signed in.
+    - Style it in the `## Look and feel` tokens: a full-height `#0E1116` column on phone and a 420 px card centred on a darkened track image on desktop, with the field focus and error borders the design gives.
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.8_
+    - _Depends: 1.2_
+    - _Files: client/Assets/Scripts/Auth/**, client/Assets/Scripts/Screens/SignIn/**, client/Assets/UI/SignIn/**, client/Tests/Auth/**_
+    - _Verify: dotnet test client/Tests --filter FullyQualifiedName~SignIn_
+    - _Area: ui_
+- [ ] 3. Main menu
+  - [ ] 3.1 Main menu
+    - Build the main menu: the Player's display name, level, experience bar and in-game currency across the top, the Career, Time Trial, Multiplayer, Garage and Leaderboard buttons, and Sign out; each button opens its screen, Sign out calls `/api/auth/signout` and returns to the sign-in screen, and the Multiplayer button is disabled with "Multiplayer needs a connection" while `ConnectionChanged` reports offline.
+    - Style it in the `## Look and feel` tokens: a vertical stack of large buttons on phone and a 3-column grid of mode cards with a car render on desktop, with the 100 ms pressed state and the 4.5 to 1 text contrast.
+    - _Requirements: 1.7, 1.10, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 2.10_
+    - _Depends: 1.2_
+    - _Files: client/Assets/Scripts/Screens/MainMenu/**, client/Assets/UI/MainMenu/**, client/Tests/Screens/MainMenuTests.cs_
+    - _Verify: dotnet test client/Tests --filter FullyQualifiedName~MainMenu_
+    - _Area: ui_
+- [ ] 4. Race selection
+  - [ ] 4.1 Race selection
+    - Build race selection: the 15 tracks with name, length, environment and difficulty, the selected track's preview and the Player's owned cars with the last raced car already selected, a Start race button that shows the loading screen with a progress bar, and Back; with no owned car it shows "Win a race to earn your first car" and disables Start race.
+    - Style it in the `## Look and feel` tokens: a scrollable track list with a bottom sheet on phone and the list on the left with the preview and car strip on the right on desktop, with the selected row's orange left bar.
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 14.3_
+    - _Depends: 1.2_
+    - _Files: client/Assets/Scripts/Screens/RaceSelection/**, client/Assets/UI/RaceSelection/**, client/Tests/Screens/RaceSelectionTests.cs_
+    - _Verify: dotnet test client/Tests --filter FullyQualifiedName~RaceSelection_
+    - _Area: ui_
+- [ ] 5. Race
+  - [ ] 5.1 Race
+    - Build the race: the start line with the Player's car and 7 AI opponents at their difficulty, `CarPhysics` with acceleration to top speed, braking to 0, drifting above 60 km/h with a drift score, nitro raising top speed by 20% for 3 seconds and refilling in 15 seconds, collisions that stop penetration and cut speed by the impact, the 3-lap counter, the finish hand-off, and the 30-second load measured from the track tap.
+    - Build the HUD (speedometer in km/h, gear, nitro bar, "Lap 2 of 3", drift score, lap timer), the chase camera, dynamic lighting and shadows, the engine and tyre audio, and `GraphicsQuality` stepping down until 120 fps and then targeting 60 fps.
+    - Style it in the `## Look and feel` tokens: the speedometer dial bottom right with the gear inside it, the nitro bar under it, the lap counter top left and the lap timer top centre, with on-screen pedals and a steering wheel on phone and keyboard and gamepad on desktop.
+    - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 4.10, 14.2, 14.4_
+    - _Depends: 1.2_
+    - _Files: client/Assets/Scripts/Race/**, client/Assets/Scenes/Race/**, client/Assets/UI/RaceHud/**, client/Tests/Race/**_
+    - _Verify: dotnet test client/Tests --filter FullyQualifiedName~CarPhysics|FullyQualifiedName~Nitro|FullyQualifiedName~Drift_
+    - _Verify: dotnet test client/Tests --filter FullyQualifiedName~Hud|FullyQualifiedName~GraphicsQuality_
+    - _Area: ui_
+- [ ] 6. Race results
+  - [ ] 6.1 Race results
+    - Build the race results screen: position, total time, best lap and in-game currency earned from `RaceFinished`, the race recorded through `/api/races` with track, car, upgrades, result, time and date, the full, half and quarter rewards by position, the "Level up" message, and Race again and Main menu buttons.
+    - Style it in the `## Look and feel` tokens: position and total time in large Rajdhani type at the top with best lap and currency below on phone, and the same panel centred with a standings table beside it on desktop.
+    - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 11.1, 11.3, 11.4_
+    - _Depends: 1.2_
+    - _Files: client/Assets/Scripts/Screens/RaceResults/**, client/Assets/UI/RaceResults/**, client/Tests/Screens/RaceResultsTests.cs_
+    - _Verify: dotnet test client/Tests --filter FullyQualifiedName~RaceResults_
+    - _Area: ui_
+- [ ] 7. Career
+  - [ ] 7.1 Career
+    - Build career mode: the stages in order with their races and completed ones marked from `/api/career`, starting the next uncompleted race on its track, marking a won race completed and unlocking the next, unlocking the next stage and adding its reward car when a stage is done, "Career complete" after the last stage, "New car unlocked" and "New track unlocked" toasts, and "Achievement unlocked" from `AchievementUnlocked`.
+    - Style it in the `## Look and feel` tokens: a vertical list of expanding stages with ticks on phone and stages as columns side by side on desktop.
+    - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7_
+    - _Depends: 1.2_
+    - _Files: client/Assets/Scripts/Screens/Career/**, client/Assets/UI/Career/**, client/Tests/Screens/CareerTests.cs_
+    - _Verify: dotnet test client/Tests --filter FullyQualifiedName~Career_
+    - _Area: ui_
+- [ ] 8. Time trial
+  - [ ] 8.1 Time trial
+    - Build time trial: the 15 tracks and the Player's owned cars, a race with no AI opponents and a lap timer, each lap's time and the Player's best lap for the track, saving a faster lap as the new best, and on finish recording the race through `/api/races` and showing the best lap and the Player's rank from `/api/leaderboards/{trackId}`.
+    - Style it in the `## Look and feel` tokens: the track and car lists then the lap timer and best lap on phone, and the lists on the left with the timer and best lap on the right on desktop.
+    - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
+    - _Depends: 1.2_
+    - _Files: client/Assets/Scripts/Screens/TimeTrial/**, client/Assets/UI/TimeTrial/**, client/Tests/Screens/TimeTrialTests.cs_
+    - _Verify: dotnet test client/Tests --filter FullyQualifiedName~TimeTrial_
+    - _Area: ui_
+- [ ] 9. Multiplayer
+  - [ ] 9.1 Multiplayer
+    - Build the multiplayer screen: Find race sends `match.join` over `/ws/race`, the matchmaking spinner shows the elapsed seconds, `match.found` lists the matched Players and lets each choose a car from their own collection, the race runs on `race.state` and `race.snapshot`, and `race.results` opens the results screen with every Player's position and time; offline it shows "Multiplayer needs a connection" and starts no match, and `race.rejected` shows "Result could not be verified".
+    - Style it in the `## Look and feel` tokens: a Find race button and the spinner with the elapsed seconds on phone, and the matched Players listed beside the spinner on desktop.
+    - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7_
+    - _Depends: 1.2_
+    - _Files: client/Assets/Scripts/Multiplayer/**, client/Assets/Scripts/Screens/Multiplayer/**, client/Assets/UI/Multiplayer/**, client/Tests/Multiplayer/**_
+    - _Verify: dotnet test client/Tests --filter FullyQualifiedName~Multiplayer_
+    - _Area: ui_
+- [ ] 10. Garage
+  - [ ] 10.1 Garage
+    - Build the garage: the owned cars with model, class and installed upgrade levels, the selected car's base stats, upgrades and customization, installing an upgrade through `/api/garage/{carId}/upgrade` with "Not enough currency" and "Upgrade cost too high", paint and decal saved through `/api/garage/{carId}/customization`, Save changes with "Car saved", and "Cars are earned by racing" and "Garage full" when a car cannot be added; each upgrade row shows its cost and the number of races that earn it.
+    - Style it in the `## Look and feel` tokens: a grid of car cards opening the car with its stats, upgrade rows and paint and decal swatches on phone, and the car list on the left with the 3D render in the centre and upgrades and customization on the right on desktop.
+    - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 9.8, 9.9, 11.2, 11.5_
+    - _Depends: 1.2_
+    - _Files: client/Assets/Scripts/Screens/Garage/**, client/Assets/UI/Garage/**, client/Tests/Screens/GarageTests.cs_
+    - _Verify: dotnet test client/Tests --filter FullyQualifiedName~Garage_
+    - _Area: ui_
+- [ ] 11. Leaderboard
+  - [ ] 11.1 Leaderboard
+    - Build the leaderboard: a track selector, the top 100 times for the selected track with rank, display name, car and time from `/api/leaderboards/{trackId}`, the Player's own rank and time pinned below the list, and a refresh within 1 minute of a recorded race.
+    - Style it in the `## Look and feel` tokens: the track selector at the top with the rows and the Player's rank pinned at the bottom on phone, and a wider table with the Player's row highlighted on desktop.
+    - _Requirements: 10.1, 10.2, 10.3, 10.4_
+    - _Depends: 1.2_
+    - _Files: client/Assets/Scripts/Screens/Leaderboard/**, client/Assets/UI/Leaderboard/**, client/Tests/Screens/LeaderboardTests.cs_
+    - _Verify: dotnet test client/Tests --filter FullyQualifiedName~Leaderboard_
+    - _Area: ui_
+- [ ] 12. Offline play and sync
+  - [ ] 12.1 Offline play and sync
+    - Build `SyncService`: it watches the connection and raises `ConnectionChanged`, keeps race history, car collection and game progress in the local SQLite database while offline, lets career races and time trials start offline, and sends the races recorded offline to `/api/races` when the connection returns so they appear on the leaderboard.
+    - _Requirements: 12.1, 12.2, 12.3, 13.2_
+    - _Depends: 1.2_
+    - _Files: client/Assets/Scripts/Sync/**, client/Tests/Sync/**_
+    - _Verify: dotnet test client/Tests --filter FullyQualifiedName~SyncService_
+    - _Area: api_
+- [ ] 13. Support and recovery
+  - [ ] 13.1 Support and recovery
+    - Build the support tools on the server: `/api/support/accounts/{playerId}` returning the account and its race history to the support role only, `/api/auth/password-reset` setting a new password and signing the Player out of every device, the monitor that alerts the on-call developer when `/api/health` stops answering for 1 minute, and the backup and restore job that loses at most 15 minutes of race results and restores within 1 hour.
+    - _Requirements: 15.1, 15.2, 15.3, 15.4_
+    - _Depends: 1.1_
+    - _Files: server/Support/**, server.Tests/Support/**_
+    - _Verify: dotnet test server.Tests --filter FullyQualifiedName~Support_
+    - _Area: api_
+- [ ] 14. Deployment setup
+  - [ ] 14.1 Deployment setup
+    - Write the Android, iOS and Steam build configuration for the Unity client, the server's `Dockerfile` and `.dockerignore`, and a `docker-compose.prod.yml` whose app image is `3d-car-racing-game:${APP_TAG}` with a Caddy service for HTTPS; the server's start command runs the database migrations first and then creates the live app's first account from `FIRST_ADMIN_EMAIL` and `FIRST_ADMIN_PASSWORD` when both are set and no account exists, and never runs the seed script.
+    - _Requirements: 14.1, 15.4_
+    - _Depends: 1.1_
+    - _Files: Dockerfile, .dockerignore, docker-compose.prod.yml, client/ProjectSettings/**, client/Builds/**_
+    - _Verify: docker compose -f docker-compose.prod.yml config --quiet --no-interpolate_
+    - _Verify: docker build -t 3d-car-racing-game:verify ._
+    - _Mode: devops_
+    - _Area: deploy_
