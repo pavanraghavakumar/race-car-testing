@@ -1,0 +1,195 @@
+/* calculator.css — the calculator screen: card, display, switch and keypad.
+ *
+ * Look and feel (design.md):
+ * - Phone: the calculator fills the width with 16px margins, the display across
+ *   the top, then the degrees/radians switch, then a 5-column keypad of equal
+ *   keys with 8px gaps; every key is at least 44px tall and nothing scrolls
+ *   sideways.
+ * - Computer: a 360px card centred on the page with a soft shadow and 24px
+ *   padding.
+ *
+ * The colours, font, spacing and corner radius come from the CSS variables in
+ * styles.css; the fallbacks below keep the screen readable on its own.
+ */
+
+.calculator {
+  --calc-page: var(--color-page, #eef1f6);
+  --calc-surface: var(--color-surface, #1f2430);
+  --calc-display: var(--color-display, #151a23);
+  --calc-text: var(--color-text, #f5f7fa);
+  --calc-muted: var(--color-muted, #9aa4b2);
+  --calc-primary: var(--color-primary, #4f8cff);
+  --calc-error: var(--color-error, #ff6b6b);
+  --calc-key: var(--color-key, #2b3242);
+  --calc-key-function: var(--color-key-function, #39415a);
+  --calc-key-hover: var(--color-key-hover, #3a4356);
+  --calc-key-function-hover: var(--color-key-function-hover, #48526e);
+  --calc-key-pressed: var(--color-key-pressed, #232936);
+  --calc-key-function-pressed: var(--color-key-function-pressed, #2f3648);
+
+  --calc-font: var(--font-family, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
+  --calc-font-mono: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, monospace);
+
+  --calc-space-1: var(--space-1, 8px);
+  --calc-space-2: var(--space-2, 16px);
+  --calc-space-3: var(--space-3, 24px);
+
+  --calc-radius-card: var(--radius-calculator, 12px);
+  --calc-radius-key: var(--radius-key, 10px);
+  --calc-radius-display: var(--radius-display, 8px);
+
+  --calc-key-min-height: var(--key-min-height, 44px);
+  --calc-width: var(--calculator-width, 360px);
+  --calc-shadow: var(--shadow-calculator, 0 12px 32px rgba(21, 26, 35, 0.18));
+
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--calc-width);
+  margin: 0 auto;
+  padding: var(--calc-space-3);
+  background: var(--calc-surface);
+  border-radius: var(--calc-radius-card);
+  box-shadow: var(--calc-shadow);
+  color: var(--calc-text);
+  font-family: var(--calc-font);
+}
+
+.calculator *,
+.calculator *::before,
+.calculator *::after {
+  box-sizing: border-box;
+}
+
+/* Display — above the switch and the keypad. */
+.calculator .display {
+  display: block;
+  min-height: 72px;
+  padding: var(--calc-space-2);
+  background: var(--calc-display);
+  border-radius: var(--calc-radius-display);
+  color: var(--calc-text);
+  font-family: var(--calc-font-mono);
+  font-size: 2rem;
+  line-height: 1.3;
+  text-align: right;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+.calculator .display:empty::before {
+  content: attr(data-placeholder);
+  color: var(--calc-muted);
+}
+
+.calculator .display.is-error {
+  color: var(--calc-error);
+  font-size: 1.25rem;
+}
+
+/* Degrees / radians switch. */
+.calculator .angle-switch {
+  display: flex;
+  gap: var(--calc-space-1);
+  margin: var(--calc-space-2) 0;
+}
+
+.calculator .angle-button {
+  flex: 1 1 0;
+  min-height: var(--calc-key-min-height);
+  padding: var(--calc-space-1);
+  border: none;
+  border-radius: var(--calc-radius-key);
+  background: var(--calc-key-function);
+  color: var(--calc-text);
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.calculator .angle-button[aria-pressed="true"] {
+  background: var(--calc-primary);
+  color: #ffffff;
+}
+
+/* Keypad — 5 equal columns, 8px gaps, every key at least 44px tall. */
+.calculator .keypad {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--calc-space-1);
+}
+
+.calculator .key {
+  min-width: 0;
+  min-height: var(--calc-key-min-height);
+  padding: var(--calc-space-1);
+  border: none;
+  border-radius: var(--calc-radius-key);
+  background: var(--calc-key);
+  color: var(--calc-text);
+  font: inherit;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: background-color 120ms ease, transform 60ms ease;
+}
+
+.calculator .key--function {
+  background: var(--calc-key-function);
+}
+
+.calculator .key--equals {
+  background: var(--calc-primary);
+  color: #ffffff;
+}
+
+.calculator .key--wide {
+  grid-column: span 4;
+}
+
+.calculator .key:hover {
+  background: var(--calc-key-hover);
+}
+
+.calculator .key--function:hover {
+  background: var(--calc-key-function-hover);
+}
+
+.calculator .key--equals:hover {
+  background: #6a9dff;
+}
+
+.calculator .key:focus-visible,
+.calculator .angle-button:focus-visible {
+  outline: 2px solid var(--calc-primary);
+  outline-offset: 2px;
+}
+
+.calculator .key:active {
+  background: var(--calc-key-pressed);
+  transform: translateY(1px);
+}
+
+.calculator .key--function:active {
+  background: var(--calc-key-function-pressed);
+}
+
+.calculator .key:disabled,
+.calculator .angle-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Phone layout: fill the width with 16px margins, no sideways scrolling. */
+@media (max-width: 480px) {
+  .calculator {
+    max-width: none;
+    padding: var(--calc-space-2);
+  }
+
+  .calculator .display {
+    font-size: 1.75rem;
+  }
+
+  .calculator .key {
+    font-size: 1rem;
+  }
+}
