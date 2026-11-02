@@ -12,6 +12,7 @@
     - _Verify: npm test_
     - _Verify: python -m pytest server/tests_
     - _Area: setup_
+    - _Issue: #31_
 - [ ] 2. Weather screen
   - [ ] 2.1 Build the weather screen with its search, current conditions, forecast and recent cities
     - Build `WeatherPageComponent` at route `''` so `/` opens the weather screen: a search field with a Search button (Enter or the button searches), the current conditions card (city name, large temperature, conditions word, humidity and wind as labelled figures, Refresh button and the time of the latest update in its header), and the 5-day forecast (5 columns on desktop, rows on a phone).
@@ -25,3 +26,4 @@
     - _Verify: npm test -- weather-page_
     - _Verify: npm test -- recent-cities_
     - _Area: ui_
+    - _Issue: #32_
