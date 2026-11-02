@@ -1,7 +1,7 @@
 # Tasks: Scientific Calculator
 
-- [ ] 1. Project setup
-  - [ ] 1.1 Create the static app skeleton
+- [x] 1. Project setup
+  - [x] 1.1 Create the static app skeleton
     - Create `index.html` with the page shell and the calculator screen's markup: a display above a keypad of buttons, the degrees/radians switch, and the keys `0`–`9`, `.`, `+`, `−`, `×`, `÷`, `^`, `(`, `)`, `√(`, `sin(`, `cos(`, `tan(`, `log(`, `ln(`, `=`, `C` and `⌫`, each with its `data-key` attribute. Link `styles.css` and load `app.js` as a module.
     - Create `styles.css` with the colours, font, spacing and corner radius of the Look and feel section as CSS variables on `:root`, plus the base page styles.
     - Create `app.js` with the screen's behaviour: it holds the expression and the angle mode, appends a clicked or typed key to the display, handles equals, clear and backspace, and switches degrees/radians with `aria-pressed`. It calls `evaluate(expression, { angleMode })` from `calculator.js`.
