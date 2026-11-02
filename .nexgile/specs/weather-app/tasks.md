@@ -1,0 +1,27 @@
+# Tasks: Weather App
+
+- [ ] 1. Project setup
+  - [ ] 1.1 Create the Angular app, the Python API and the shared styles
+    - Scaffold the Angular app at the repository root with the Angular CLI (standalone components, routing, CSS), and the Python API in `server/` with FastAPI and uvicorn.
+    - Write `server/app/db.py` (SQLite connection from `DATABASE_PATH`, default `data/weather.db`, and the `recent_city` table with its unique index), `server/app/weather.py` (Open-Meteo geocoding and forecast calls with a 10 second timeout, WMO codes mapped to `Clear`, `Cloudy`, `Rain`, `Snow`, `Fog`, `Thunderstorm`), `server/app/recent.py` (read, add-or-move-to-top, remove, 10-city cap) and `server/app/main.py` (the app, the routers, `GET /api/health` answering `{"status": "ok"}`, and the built Angular files served at `/` when they exist).
+    - Add every endpoint of `design.md`: `GET /api/weather?city=<name>` answering the exact JSON (city, country, latitude, longitude, current with temperature_c, conditions, humidity_pct, wind_kph, observed_at, 5 forecast entries, updated_at), with `404` `City not found. Check the spelling and try again.`, `504` and `502` `Weather data is unavailable right now. Try again.`; `GET /api/recent`, `POST /api/recent` (body `city`, `country`, `latitude`, `longitude`; adds or moves to the top, case-insensitive on city and country, drops the oldest beyond 10) and `DELETE /api/recent/{city}` (case-insensitive, `404` `City is not in the recent cities list.`), each answering the `{"cities": [...]}` shape with `temperature_c` null when it cannot be fetched.
+    - Write `server/requirements.txt`, `package.json` scripts (`dev` starts uvicorn on `127.0.0.1:8000` and the Angular dev server on `127.0.0.1` at `PORT` with `/api` proxied to `127.0.0.1:8000`; `test` runs the Angular unit tests once), `angular.json`'s dev-server proxy config, `src/styles.css` with the colours and font of `## Look and feel` as CSS variables, `README.md` with the `## Build and run` commands, `.gitignore` including `.env`, and `e2e/.gitkeep` with `@playwright/test` as a dev dependency and `e2e/` excluded from the unit test runner.
+    - Write the API tests in `server/tests/` with `pytest` and `TestClient`: a temporary SQLite file per test, a fake Open-Meteo call, and one passing Angular test in `src/app/app.spec.ts`. The API tests cover every success and error answer, the 10-city cap, the move-to-top rule and the case-insensitive match.
+    - _Requirements: 1.1, 1.3, 1.4, 1.6, 1.7, 2.1, 2.2, 2.3, 2.6_
+    - _Files: package.json, angular.json, tsconfig.json, tsconfig.app.json, tsconfig.spec.json, src/main.ts, src/index.html, src/styles.css, src/app/app.ts, src/app/app.config.ts, src/app/app.routes.ts, src/app/app.spec.ts, server/**, e2e/.gitkeep, README.md, .gitignore_
+    - _Verify: npm test_
+    - _Verify: python -m pytest server/tests_
+    - _Area: setup_
+- [ ] 2. Weather screen
+  - [ ] 2.1 Build the weather screen with its search, current conditions, forecast and recent cities
+    - Build `WeatherPageComponent` at route `''` so `/` opens the weather screen: a search field with a Search button (Enter or the button searches), the current conditions card (city name, large temperature, conditions word, humidity and wind as labelled figures, Refresh button and the time of the latest update in its header), and the 5-day forecast (5 columns on desktop, rows on a phone).
+    - Build `RecentCitiesComponent` beside the weather screen: the cities most recently searched first, each row with its name and current temperature, a remove button beside each city, and the message `No recent cities yet. Search for a city to add it.` when the list is empty. Clicking a city shows its weather through the weather screen's search; clicking remove calls `removeRecent(city)` and keeps the weather on screen.
+    - On start call `getWeather('London')` and `getRecent()`; on a successful search call `getWeather(city)` then `addRecent(...)`; on Refresh fetch again and update the time. Show the error banner with the exact messages for a city not found and for unavailable data, keeping the weather already on screen; a failed `addRecent` or `removeRecent` leaves the list as it was and shows the unavailable message.
+    - Write `src/app/weather.service.ts` (the only caller of `/api/*`, turning `404` into `CityNotFoundError` and `502`/`504` into `WeatherUnavailableError`) and the screen's own stylesheets in the `## Look and feel` style, with the phone and desktop layouts of `design.md`.
+    - Write the component tests with `HttpTestingController` for the London start, a search, both error messages, the refresh, the update time, the recent list order, a click on a city, a remove and the empty message.
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
+    - _Depends: 1.1_
+    - _Files: src/app/app.routes.ts, src/app/weather.service.ts, src/app/weather.service.spec.ts, src/app/weather-page/**, src/app/recent-cities/**_
+    - _Verify: npm test -- weather-page_
+    - _Verify: npm test -- recent-cities_
+    - _Area: ui_
