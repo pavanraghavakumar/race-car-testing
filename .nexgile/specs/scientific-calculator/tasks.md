@@ -16,8 +16,8 @@
     - _Area: setup_
     - _Issue: #25_
 
-- [ ] 2. Build the calculator screen
-  - [ ] 2.1 Build the calculator screen with its keypad, functions and errors
+- [x] 2. Build the calculator screen
+  - [x] 2.1 Build the calculator screen with its keypad, functions and errors
     - Finish the screen in `index.html`, `app.js` and `calculator.js`: the display above the keypad, digits, operators, decimal point and brackets adding to the display, keyboard input, clear and backspace, equals showing the result, powers and roots, sine, cosine and tangent with the degrees/radians switch, logarithms, and the error messages with the expression kept.
     - Write the screen's own stylesheet `calculator.css` for the calculator card, display, switch and 5-column keypad, in the Look and feel style: phone layout filling the width with 16px margins and keys at least 44px tall, computer layout as a 360px card centred with a soft shadow. Link it from `index.html`.
     - Add `tests/screen.test.js` with Node's built-in test runner, checking the screen's markup and key wiring: every key has its `data-key`, the display sits above the keypad, and the degrees/radians switch starts on degrees.
