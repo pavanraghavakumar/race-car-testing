@@ -10,6 +10,7 @@
     - _Files: package.json, README.md, .gitignore, .env.example, server/**, app/package.json, app/app.json, app/tsconfig.json, app/app/_layout.tsx, app/app/index.tsx, app/app/search.tsx, app/app/place/[id].tsx, app/src/api/**, app/src/storage/**, app/src/theme/**, app/__tests__/setup.test.tsx, e2e/.gitkeep_
     - _Verify: npm test --workspace server_
     - _Verify: npm test --workspace app -- setup_
+    - _Issue: #33_
   - [ ] 1.2 Deployment setup
     - Write what Expo and the cloud host need to build and run the app and the service: the Expo build configuration for the app, the service's `Dockerfile` and `.dockerignore`, a `docker-compose.prod.yml` for the service, and the start command that runs the service's build first.
     - Secrets are read from environment variables only; nothing is deployed.
@@ -20,6 +21,7 @@
     - _Files: Dockerfile, .dockerignore, docker-compose.prod.yml, app/eas.json, server/package.json_
     - _Verify: docker compose -f docker-compose.prod.yml config --quiet --no-interpolate_
     - _Verify: docker build -t weather-app-2:verify ._
+    - _Issue: #34_
 - [ ] 2. Saved places list screen
   - [ ] 2.1 Saved places list screen
     - Build `app/app/index.tsx`: the "Weather" header with the round add button, the list of saved places on white cards with name, location and chevron, the swipe-left Delete action, the empty state with "No places saved yet." and "Add a place", and navigation to the search screen and to the weather screen for the tapped place.
@@ -29,6 +31,7 @@
     - _Area: ui_
     - _Files: app/app/index.tsx, app/src/screens/savedPlaces/**, app/__tests__/savedPlaces.test.tsx_
     - _Verify: npm test --workspace app -- savedPlaces_
+    - _Issue: #35_
 - [ ] 3. Search places screen
   - [ ] 3.1 Search places screen
     - Build `app/app/search.tsx`: the search field with Cancel, focused on open, results from the service client after 2 characters with name and location, tapping a result saving the place and returning to the list, the duplicate rule keeping the one already saved, and the message "Could not search places. Check your connection and try again." under the field when the search fails.
@@ -38,6 +41,7 @@
     - _Area: ui_
     - _Files: app/app/search.tsx, app/src/screens/search/**, app/__tests__/search.test.tsx_
     - _Verify: npm test --workspace app -- search_
+    - _Issue: #36_
 - [ ] 4. Weather screen
   - [ ] 4.1 Weather screen
     - Build `app/app/place/[id].tsx`: the back button and place name, the current conditions card (temperature, condition, feels like, humidity, wind), the 5-day forecast card, the loading indicator, pull to refresh, and saving each fetched answer as the last weather for the place.
@@ -48,3 +52,4 @@
     - _Area: ui_
     - _Files: app/app/place/[id].tsx, app/src/screens/weather/**, app/__tests__/weather.test.tsx_
     - _Verify: npm test --workspace app -- weather_
+    - _Issue: #37_
