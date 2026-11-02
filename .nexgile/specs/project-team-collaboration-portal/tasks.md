@@ -1,0 +1,161 @@
+# Tasks: Project & Team Collaboration Portal
+
+- [ ] 1. Project setup
+  - [ ] 1.1 Project setup: monorepo, database, API and app shell
+    - Create the npm workspaces `web`, `api` and `shared` (React 18 + Vite + TypeScript, Express + TypeScript run with `tsx`, shared API types), `README.md` with the commands of `## Build and run`, `.gitignore` including `.env`, `.env.example` (database values, `API_PORT`, `S3_BUCKET`, `FIRST_ADMIN_EMAIL`, `FIRST_ADMIN_PASSWORD`), `docker-compose.yml` (project name `project-team-collaboration-portal`, one PostgreSQL service, no `container_name`), the migration runner and the migrations of the design's data model, `GET /api/health`, the seed script with the three test logins and sample content (never in production), the `Dev` script that starts the database, seeds an empty one and runs the API and Vite on `127.0.0.1`, `@playwright/test` with an `e2e/` folder holding `.gitkeep` (excluded from Vitest), and one passing test in each package.
+    - _Requirements: 15.7_
+    - _Files: package.json, README.md, .gitignore, .env.example, docker-compose.yml, shared/**, api/package.json, api/tsconfig.json, api/src/index.ts, api/src/app.ts, api/src/db.ts, api/src/config.ts, api/src/migrate.ts, api/src/seed.ts, api/migrations/**, api/tests/setup.ts, api/tests/health.test.ts, web/package.json, web/tsconfig.json, web/vite.config.ts, web/index.html, web/src/main.tsx, web/src/App.tsx, web/src/styles/tokens.css, web/src/styles/global.css, web/src/lib/api.ts, web/src/lib/queryClient.ts, web/src/lib/format.ts, web/src/test/setup.ts, web/src/App.test.tsx, e2e/.gitkeep, playwright.config.ts_
+    - _Verify: npm install_
+    - _Verify: npm test --workspace api -- health_
+    - _Verify: npm test --workspace web -- App_
+  - [ ] 1.2 Project setup: API auth, tenancy and sessions
+    - Build the `auth` and `tenancy` modules: sign-in with `scrypt` and a per-person salt, the session cookie and the `sessions` table, sign-out, `/api/auth/me`, the company login start and callback (503 when the provider is not configured), the 401 answer for a request without a valid session, and the middleware that loads the person's organization and role. Tests start the app on a port they pick against a Testcontainers database.
+    - _Requirements: 1.2, 1.3, 1.4, 1.5, 1.7, 1.10, 15.7, 15.8_
+    - _Depends: 1.1_
+    - _Files: api/src/modules/auth/**, api/src/modules/tenancy/**, api/src/app.ts, api/tests/auth.test.ts_
+    - _Verify: npm test --workspace api -- auth_
+  - [ ] 1.3 Project setup: API projects, teams and people
+    - Build the `projects`, `teams`, `people` and `dashboard` modules with every endpoint of the design: project list, create, read, update, status change, delete, members; team list, create, read, add member, archive; people list, invite, organization name; the three dashboard answers. Enforce the role rules (403 for a Project manager or Team member creating or deleting a project, 404 outside the organization or the person's projects) and add the notifications the design names.
+    - _Requirements: 2.1, 2.2, 3.1, 3.2, 3.3, 3.4, 3.7, 3.9, 3.10, 4.1, 4.2, 4.3, 4.4, 4.5, 13.1, 13.2, 13.3, 13.4, 13.5, 13.6, 13.7, 13.8, 13.10, 15.1, 15.2, 15.3_
+    - _Depends: 1.2_
+    - _Files: api/src/modules/projects/**, api/src/modules/teams/**, api/src/modules/people/**, api/src/modules/dashboard/**, api/src/app.ts, api/tests/projects.test.ts, api/tests/teams.test.ts, api/tests/people.test.ts, api/tests/dashboard.test.ts_
+    - _Verify: npm test --workspace api -- projects_
+    - _Verify: npm test --workspace api -- teams_
+    - _Verify: npm test --workspace api -- people_
+    - _Verify: npm test --workspace api -- dashboard_
+  - [ ] 1.4 Project setup: API tasks, comments, files and time
+    - Build the `tasks`, `comments`, `files` and `time` modules: task list, create, read, update, move and delete with the assignee and project manager rules, the "Assign the task before marking it done." refusal and the done → in progress reopen; comment post, edit and delete; file upload (100 MB limit), download with the access check and delete; time entry create, list, approve and reject with the own-entry refusal. Add the notifications of requirements 6.5, 7.4, 8.4 and 11.4.
+    - _Requirements: 5.2, 5.3, 5.4, 5.5, 5.7, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 11.1, 11.2, 11.3, 11.4, 11.5, 11.6, 11.7, 11.8, 11.9, 15.4, 15.5, 15.6_
+    - _Depends: 1.3_
+    - _Files: api/src/modules/tasks/**, api/src/modules/comments/**, api/src/modules/files/**, api/src/modules/time/**, api/src/app.ts, api/tests/tasks.test.ts, api/tests/comments.test.ts, api/tests/files.test.ts, api/tests/time.test.ts_
+    - _Verify: npm test --workspace api -- tasks_
+    - _Verify: npm test --workspace api -- comments_
+    - _Verify: npm test --workspace api -- files_
+    - _Verify: npm test --workspace api -- time_
+  - [ ] 1.5 Project setup: API notifications, calendar and reports
+    - Build the `notifications`, `calendar` and `reports` modules: notification list, mark read, mark all read and unread count; the overdue sweep every 5 minutes inside the API; the month calendar of the person's tasks and project dates; the three reports. Add a performance test that the board's task query of a 500-task project answers within 2 seconds.
+    - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.7, 10.1, 10.2, 10.3, 10.4, 10.5, 12.1, 12.2, 12.3, 12.4, 12.5, 12.6, 12.7, 16.1, 16.2, 16.3, 16.4_
+    - _Depends: 1.4_
+    - _Files: api/src/modules/notifications/**, api/src/modules/calendar/**, api/src/modules/reports/**, api/src/app.ts, api/tests/notifications.test.ts, api/tests/calendar.test.ts, api/tests/reports.test.ts, api/tests/performance.test.ts_
+    - _Verify: npm test --workspace api -- notifications_
+    - _Verify: npm test --workspace api -- calendar_
+    - _Verify: npm test --workspace api -- reports_
+    - _Verify: npm test --workspace api -- performance_
+- [ ] 2. Sign-in and app shell
+  - [ ] 2.1 Sign-in page
+    - Build `SignInPage` at `/` as the design's centred card: company login button above a divider labelled "or", username and password fields, the primary sign-in button, the error message above the button, and the company login timeout message after 10 seconds. On success open the first screen of the person's role; a signed-in person who opens `/` goes to that screen; a signed-out person on any other screen goes to `/`.
+    - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.8_
+    - _Depends: 1.2_
+    - _Files: web/src/pages/SignInPage.tsx, web/src/pages/SignInPage.module.css, web/src/pages/SignInPage.test.tsx, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- SignInPage_
+  - [ ] 2.2 App shell, header and navigation
+    - Build `AppShell` around every signed-in screen: the 64px header with the app name, organization name, bell button, user name and role and sign-out button; the 240px sidebar on desktop with the navigation of the design; the menu button and drawer on a phone; the toast area; the "You do not have access to this page." screen for a role that may not see a page; the 401 handling that clears the cache and opens `/`; and the shared responsive and keyboard rules (one column at 375px, sidebar at 1280px, visible focus outline, 4.5 to 1 contrast).
+    - _Requirements: 1.6, 1.7, 1.9, 14.1, 14.2, 14.3, 14.4, 14.5, 14.6_
+    - _Depends: 2.1_
+    - _Files: web/src/components/AppShell.tsx, web/src/components/AppShell.module.css, web/src/components/AppShell.test.tsx, web/src/components/Toast.tsx, web/src/components/Toast.module.css, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- AppShell_
+- [ ] 3. Dashboards
+  - [ ] 3.1 Organization dashboard
+    - Build `OrganizationDashboard` at `/dashboard`: four count cards (active projects, teams, people, overdue tasks), the project list with name, owner, status and due date, the team list with name, lead and member count, the New project and New team buttons, the People and Reports links, and the phone layout of one column.
+    - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 2.10_
+    - _Depends: 2.2_
+    - _Files: web/src/pages/OrganizationDashboard.tsx, web/src/pages/OrganizationDashboard.module.css, web/src/pages/OrganizationDashboard.test.tsx, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- OrganizationDashboard_
+  - [ ] 3.2 Project dashboard
+    - Build `ProjectDashboard` at `/projects`, the Project manager's first screen: a list of project cards with the name, status badge, owner, due date and a progress bar of done tasks, in the design's style and one column on a phone.
+    - _Requirements: 1.2, 2.9_
+    - _Depends: 2.2_
+    - _Files: web/src/pages/ProjectDashboard.tsx, web/src/pages/ProjectDashboard.module.css, web/src/pages/ProjectDashboard.test.tsx, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- ProjectDashboard_
+  - [ ] 3.3 My work
+    - Build `MyWork` at `/my-work`, the Team member's first screen: the person's tasks grouped by due date (Overdue, Today, This week, Later), each row with the title, project and status badge, and the person's unread notifications.
+    - _Requirements: 1.2, 9.1_
+    - _Depends: 2.2_
+    - _Files: web/src/pages/MyWork.tsx, web/src/pages/MyWork.module.css, web/src/pages/MyWork.test.tsx, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- MyWork_
+- [ ] 4. Projects and teams
+  - [ ] 4.1 New and edit project form
+    - Build `ProjectForm` at `/projects/new` and `/projects/:projectId/edit`: name, description, start date, due date and owner fields (the owner list holds the organization's Project managers), the validation messages of requirements 3.3 and 3.4 above the submit button, the "Project saved." toast, and the status control that moves the project along planned → active → on hold → completed.
+    - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
+    - _Depends: 2.2_
+    - _Files: web/src/pages/ProjectForm.tsx, web/src/pages/ProjectForm.module.css, web/src/pages/ProjectForm.test.tsx, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- ProjectForm_
+  - [ ] 4.2 Project page
+    - Build `ProjectPage` at `/projects/:projectId`: the header with name, status badge, owner, dates and the Edit, Delete project and Add member buttons; the tab bar (Overview, Board, Tasks, Files, Time, Comments); the Overview tab with the four task counts and the member list; the Add member and Remove actions; the Tasks tab list; the Delete project confirmation and its "Only an Organization admin can delete a project." message; a completed project keeps its records readable.
+    - _Requirements: 3.8, 3.9, 3.10, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.10_
+    - _Depends: 2.2_
+    - _Files: web/src/pages/ProjectPage.tsx, web/src/pages/ProjectPage.module.css, web/src/pages/ProjectPage.test.tsx, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- ProjectPage_
+  - [ ] 4.3 Kanban board
+    - Build `KanbanBoard` at `/projects/:projectId/board`: three equal columns "To do", "In progress" and "Done" with their counts, cards with the title, assignee avatar and due date, HTML5 drag and drop that moves a task and refuses a non-assignee or a task without an assignee with the requirement's message, a card click that opens the task, the Add task button, and the phone layout of stacked columns.
+    - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 5.10_
+    - _Depends: 2.2_
+    - _Files: web/src/pages/KanbanBoard.tsx, web/src/pages/KanbanBoard.module.css, web/src/pages/KanbanBoard.test.tsx, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- KanbanBoard_
+  - [ ] 4.4 New task form
+    - Build `TaskForm` at `/projects/:projectId/tasks/new`: title, description, assignee (the project's team members), due date and priority (Low, Medium, High) fields, the "Enter the task title." message, and the new task shown on the board and in the task list after saving.
+    - _Requirements: 6.1, 6.2, 6.3_
+    - _Depends: 2.2_
+    - _Files: web/src/pages/TaskForm.tsx, web/src/pages/TaskForm.module.css, web/src/pages/TaskForm.test.tsx, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- TaskForm_
+  - [ ] 4.5 Task page
+    - Build `TaskPage` at `/tasks/:taskId`: the title and status badge, the details in a two-column grid on desktop and one column on a phone, the edit form with the "Task saved." toast, the assignee shown on the card and page, the Delete task confirmation, and the Edit and Delete task buttons hidden for a Team member who is not the assignee.
+    - _Requirements: 6.4, 6.6, 6.7, 6.8, 6.9, 6.10_
+    - _Depends: 2.2_
+    - _Files: web/src/pages/TaskPage.tsx, web/src/pages/TaskPage.module.css, web/src/pages/TaskPage.test.tsx, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- TaskPage_
+  - [ ] 4.6 Comments
+    - Build the comment section of the task page and the project page: the list with text, author and created time, newest last; the comment field and Post button with the "Write a comment before posting." message; Edit and Delete of the person's own comments with the "edited" label and the "You can change only your own comments." message.
+    - _Requirements: 7.1, 7.2, 7.3, 7.5, 7.6, 7.7, 7.8_
+    - _Depends: 4.2, 4.5_
+    - _Files: web/src/components/CommentSection.tsx, web/src/components/CommentSection.module.css, web/src/components/CommentSection.test.tsx, web/src/pages/TaskPage.tsx, web/src/pages/ProjectPage.tsx_
+    - _Verify: npm test --workspace web -- CommentSection_
+  - [ ] 4.7 Files
+    - Build the file section of the task page and the project page: the Upload file button and file picker for any type, the 100 MB limit message, the list with name, size, type and uploader, the "File uploaded." toast, download on the file name, and Delete of the person's own files.
+    - _Requirements: 4.8, 8.1, 8.2, 8.3, 8.5, 8.6, 8.8_
+    - _Depends: 4.2, 4.5_
+    - _Files: web/src/components/FileSection.tsx, web/src/components/FileSection.module.css, web/src/components/FileSection.test.tsx, web/src/pages/TaskPage.tsx, web/src/pages/ProjectPage.tsx_
+    - _Verify: npm test --workspace web -- FileSection_
+  - [ ] 4.8 Time tracking
+    - Build the Log time form on the task page (date, hours, note) with the "Enter a date and hours between 0 and 24." message, the task's time list, the Approve and Reject buttons for the Project manager with the "You cannot approve your own time entry." message, the project's Time tab with each entry's status, and the My time page at `/my-time`.
+    - _Requirements: 4.9, 11.1, 11.2, 11.3, 11.5, 11.6, 11.7, 11.8, 11.9_
+    - _Depends: 4.2, 4.5_
+    - _Files: web/src/components/TimeSection.tsx, web/src/components/TimeSection.module.css, web/src/components/TimeSection.test.tsx, web/src/pages/MyTimePage.tsx, web/src/pages/MyTimePage.module.css, web/src/pages/MyTimePage.test.tsx, web/src/pages/TaskPage.tsx, web/src/pages/ProjectPage.tsx, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- TimeSection_
+    - _Verify: npm test --workspace web -- MyTimePage_
+  - [ ] 4.9 People and teams
+    - Build `PeoplePage` at `/people` (people table with name, email and role, Invite person form with the duplicate email message, team list with New team form, organization name form that updates the header) and `TeamPage` at `/teams/:teamId` (name, lead, members, Add member, Archive with the "archived" label), in the design's style.
+    - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5, 13.6, 13.7, 13.8, 13.9, 13.10_
+    - _Depends: 2.2_
+    - _Files: web/src/pages/PeoplePage.tsx, web/src/pages/PeoplePage.module.css, web/src/pages/PeoplePage.test.tsx, web/src/pages/TeamPage.tsx, web/src/pages/TeamPage.module.css, web/src/pages/TeamPage.test.tsx, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- PeoplePage_
+    - _Verify: npm test --workspace web -- TeamPage_
+- [ ] 5. Notifications, calendar and reports
+  - [ ] 5.1 Notifications
+    - Build `NotificationPanel`: the unread count beside the bell in the header, the popover of 360px on desktop and full-screen drawer with a close button on a phone, the list newest first with text, time and read state, a click that marks read, reduces the count and opens the task or project, and the Mark all as read button.
+    - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.6, 9.7_
+    - _Depends: 2.2_
+    - _Files: web/src/components/NotificationPanel.tsx, web/src/components/NotificationPanel.module.css, web/src/components/NotificationPanel.test.tsx, web/src/components/AppShell.tsx_
+    - _Verify: npm test --workspace web -- NotificationPanel_
+  - [ ] 5.2 Calendar
+    - Build `CalendarPage` at `/calendar`: the current month grid with the person's tasks by due date and the start and due dates of their projects, Previous, Next and Today buttons, today marked, a day's tasks in a panel below the grid, a task click that opens the task, and the phone grid with a dot on each day that holds a task or project date.
+    - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6_
+    - _Depends: 2.2_
+    - _Files: web/src/pages/CalendarPage.tsx, web/src/pages/CalendarPage.module.css, web/src/pages/CalendarPage.test.tsx, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- CalendarPage_
+  - [ ] 5.3 Reports
+    - Build `ReportsPage` at `/reports` with the tabs Project progress, Time tracking and Team workload: the progress table with done, in progress and overdue counts and a project name that opens the project, the time table with the month field and the total hours, the workload table, and stacked rows on a phone.
+    - _Requirements: 12.1, 12.2, 12.3, 12.4, 12.5, 12.6, 12.7, 12.8_
+    - _Depends: 2.2_
+    - _Files: web/src/pages/ReportsPage.tsx, web/src/pages/ReportsPage.module.css, web/src/pages/ReportsPage.test.tsx, web/src/App.tsx_
+    - _Verify: npm test --workspace web -- ReportsPage_
+- [ ] 6. Deployment setup
+  - [ ] 6.1 Deployment setup
+    - Write the AWS deployment: a multi-stage `Dockerfile` that builds the web app and the API and serves both from one origin, a `.dockerignore`, and a `docker-compose.prod.yml` whose app image is `project-team-collaboration-portal:${APP_TAG}` with a Caddy service for HTTPS; the start command runs the migrations and then creates the first Organization admin from `FIRST_ADMIN_EMAIL` and `FIRST_ADMIN_PASSWORD` when both are set and the database has no account, and never runs the seed script. Secrets are read from environment variables only.
+    - _Requirements: 1.1, 15.7_
+    - _Depends: 1.5, 2.2, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 5.1, 5.2, 5.3_
+    - _Mode: devops_
+    - _Area: deploy_
+    - _Files: Dockerfile, .dockerignore, docker-compose.prod.yml, api/src/first-admin.ts, api/src/index.ts_
+    - _Verify: docker compose -f docker-compose.prod.yml config --quiet --no-interpolate_
+    - _Verify: docker build -t project-team-collaboration-portal:verify ._
