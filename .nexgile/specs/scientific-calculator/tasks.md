@@ -14,6 +14,7 @@
     - _Verify: npm install_
     - _Verify: npm test_
     - _Area: setup_
+    - _Issue: #25_
 
 - [ ] 2. Build the calculator screen
   - [ ] 2.1 Build the calculator screen with its keypad, functions and errors
@@ -25,6 +26,7 @@
     - _Files: index.html, app.js, calculator.js, calculator.css, tests/screen.test.js_
     - _Verify: npm test_
     - _Area: ui_
+    - _Issue: #26_
 
 - [ ] 3. Deployment setup
   - [ ] 3.1 Configure static hosting
@@ -34,3 +36,4 @@
     - _Files: netlify.toml_
     - _Verify: npm test_
     - _Area: deploy_
+    - _Issue: #27_
